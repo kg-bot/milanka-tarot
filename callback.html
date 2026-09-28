@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>TikTok connection</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<h1>TikTok connection</h1>
+<div id="out"><p>Waiting for TikTok…</p></div>
+<script>
+  // Shows the one-time authorization code so it can be pasted into
+  // `php artisan milanka:tiktok-connect --code=... --state=...`. Nothing is sent anywhere.
+  var q = new URLSearchParams(location.search);
+  var out = document.getElementById('out');
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
+  if (q.get('error')) {
+    out.innerHTML = '<p>TikTok did not grant access: ' + esc(q.get('error_description') || q.get('error')) + '</p>';
+  } else if (q.get('code')) {
+    var cmd = 'php artisan milanka:tiktok-connect --code="' + q.get('code') + '" --state="' + (q.get('state') || '') + '"';
+    out.innerHTML = '<p>Run this on the server within a few minutes (the code expires quickly):</p><span class="code">' + esc(cmd) + '</span>';
+  } else {
+    out.innerHTML = '<p>No authorization code in this link.</p>';
+  }
+</script>
+</main>
+</body>
+</html>
