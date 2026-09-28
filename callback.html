@@ -20,7 +20,9 @@
   if (q.get('error')) {
     out.innerHTML = '<p>TikTok did not grant access: ' + esc(q.get('error_description') || q.get('error')) + '</p>';
   } else if (q.get('code')) {
-    var cmd = 'php artisan milanka:tiktok-connect --code="' + q.get('code') + '" --state="' + (q.get('state') || '') + '"';
+    // Single quotes: codes can contain "!", which bash expands inside double quotes.
+    function sq(s) { return "'" + String(s).replace(/'/g, "'\\''") + "'"; }
+    var cmd = 'php artisan milanka:tiktok-connect --code=' + sq(q.get('code')) + ' --state=' + sq(q.get('state') || '');
     out.innerHTML = '<p>Run this on the server within a few minutes (the code expires quickly):</p><span class="code">' + esc(cmd) + '</span>';
   } else {
     out.innerHTML = '<p>No authorization code in this link.</p>';
